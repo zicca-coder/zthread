@@ -13,6 +13,7 @@
 
     <modules>
         <module>common-spring-boot-starter</module>
+        <module>nacos-cloud-spring-boot-starter</module>
     </modules>
 
 
