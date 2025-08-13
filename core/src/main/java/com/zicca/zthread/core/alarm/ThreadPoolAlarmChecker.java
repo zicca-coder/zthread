@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.*;
 
 /**
@@ -36,6 +37,8 @@ public class ThreadPoolAlarmChecker {
                     .namePrefix("scheduler_thread-pool_alarm_checker")
                     .build()
     );
+
+    private final Map<String, Long> lastRejectCountMap = new ConcurrentHashMap<>();
 
     /**
      * 启动定时检查任务
@@ -124,6 +127,30 @@ public class ThreadPoolAlarmChecker {
             // 触发报警
             // .....
             sendAlarmMessage(AlarmTypeEnum.CAPACITY.getValue(), holder);
+        }
+
+    }
+
+    /**
+     * 检查拒绝策略执行次数
+     */
+    public void checkRejectCount(ThreadPoolExecutorHolder holder) {
+        ThreadPoolExecutor executor = holder.getExecutor();
+        String threadPoolId = holder.getThreadPoolId();
+
+        if (!(executor instanceof ZThreadExecutor)) {
+            return;
+        }
+
+        ZThreadExecutor zThreadExecutor = (ZThreadExecutor) executor;
+        long currentRejectCount = zThreadExecutor.getRejectCount().get();
+        Long lastRejectCount = lastRejectCountMap.getOrDefault(threadPoolId, 0L);
+
+        // 首次初始化或拒绝次数增加时触发
+        if (currentRejectCount > lastRejectCount) {
+            sendAlarmMessage(AlarmTypeEnum.REJECTED.getValue(), holder);
+            // 更新最后记录值
+            lastRejectCountMap.put(threadPoolId, currentRejectCount);
         }
 
     }
