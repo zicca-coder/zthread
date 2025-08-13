@@ -79,6 +79,12 @@ public class NacosCloudRefresherHandler implements ApplicationRunner {
         log.info("Dynamic thread pool refresher, add nacos cloud listener success. data-id: {}, group: {}", nacosConfig.getDataId(), nacosConfig.getGroup());
     }
 
+    /**
+     * 刷新线程池参数
+     *
+     * @param configInfo 配置信息
+     * @throws IOException 配置信息解析异常
+     */
     private void refreshThreadPoolProperties(String configInfo) throws IOException {
         Map<Object, Object> configInfoMap = ConfigParserHandler.getInstance().parseConfig(configInfo, properties.getConfigFileType());
         MapConfigurationPropertySource source = new MapConfigurationPropertySource(configInfoMap);
@@ -96,12 +102,17 @@ public class NacosCloudRefresherHandler implements ApplicationRunner {
         // 判断线程池配置是否发生变化
         // 逐个遍历线程池配置
         for (ThreadPoolExecutorProperties remoteProperties : refresherProperties.getExecutors()) {
-            boolean changed = hasThreadPoolConfigChanged(remoteProperties);
-            if (!changed) {
-                continue;
+            String threadPoolId = remoteProperties.getThreadPoolId();
+            // 以线程池 ID 为粒度加锁，避免多个线程同时刷新同一个线程池
+            synchronized (threadPoolId.intern()) {
+                // 检查线程池配置是否发生变化
+                boolean changed = hasThreadPoolConfigChanged(remoteProperties);
+                if (!changed) {
+                    continue;
+                }
+                // 变更线程池配置
+                reSetThreadPoolProperties(remoteProperties);
             }
-            // 变更线程池配置
-            reSetThreadPoolProperties(remoteProperties);
         }
 
     }
