@@ -71,6 +71,7 @@ public class BootstrapConfigProperties {
         private String url;
     }
 
+    @Data
     public static class MonitorConfig {
 
         /**
@@ -79,7 +80,7 @@ public class BootstrapConfigProperties {
         private Boolean enable = Boolean.TRUE;
 
         /**
-         * 监控类型
+         * 监控类型：microMeter 或 本地log
          */
         private String collectType = "micrometer";
 
