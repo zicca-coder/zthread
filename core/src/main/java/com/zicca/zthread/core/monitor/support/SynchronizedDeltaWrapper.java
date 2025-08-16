@@ -1,4 +1,4 @@
-package com.zicca.zthread.core.monitor;
+package com.zicca.zthread.core.monitor.support;
 
 /**
  * 用于计算两个周期之间的指标差值（如：任务完成数、拒绝次数等）
@@ -6,7 +6,7 @@ package com.zicca.zthread.core.monitor;
  *
  * @author zicca
  */
-public class DeltaWrapper {
+public class SynchronizedDeltaWrapper implements DeltaWrapper {
 
     /**
      * 上一个周期的指标值
@@ -23,6 +23,7 @@ public class DeltaWrapper {
      *
      * @param newValue 当前周期采集到的原始指标值，首次调用时 lastValue 和 currentValue 相同
      */
+    @Override
     public synchronized void update(long newValue) {
         this.lastValue = (this.currentValue == null) ? newValue : this.currentValue;
         this.currentValue = newValue;
@@ -33,6 +34,7 @@ public class DeltaWrapper {
      *
      * @return 周期内的差值：首次为 0
      */
+    @Override
     public synchronized long getDelta() {
         if (currentValue == null || lastValue == null) {
             return 0;
