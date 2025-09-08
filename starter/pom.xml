@@ -15,6 +15,7 @@
         <module>common-spring-boot-starter</module>
         <module>nacos-cloud-spring-boot-starter</module>
         <module>apollo-spring-boot-starter</module>
+        <module>adapter</module>
     </modules>
 
 
