@@ -5,11 +5,13 @@ import com.zicca.zthread.core.config.BootstrapConfigProperties;
 import com.zicca.zthread.core.notification.service.NotifierDispatcher;
 import com.zicca.zthread.spring.base.configuration.ZThreadBaseConfiguration;
 import com.zicca.zthread.spring.base.enable.MarkerConfiguration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
@@ -43,6 +45,11 @@ public class CommonAutoConfiguration {
     @Bean
     public DynamicThreadPoolRefreshListener dynamicThreadPoolRefreshListener(NotifierDispatcher notifierDispatcher) {
         return new DynamicThreadPoolRefreshListener(notifierDispatcher);
+    }
+
+    @Bean
+    public ZThreadBannerHandler zThreadBannerHandler(ObjectProvider<BuildProperties> buildProperties) {
+        return new ZThreadBannerHandler(buildProperties.getIfAvailable());
     }
 
 }
