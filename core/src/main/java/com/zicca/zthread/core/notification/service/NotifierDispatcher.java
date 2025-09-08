@@ -2,6 +2,8 @@ package com.zicca.zthread.core.notification.service;
 
 import com.zicca.zthread.core.config.BootstrapConfigProperties;
 import com.zicca.zthread.core.notification.dto.ThreadPoolAlarmNotifyDTO;
+import com.zicca.zthread.core.notification.dto.ThreadPoolConfigChangeDTO;
+import com.zicca.zthread.core.notification.dto.WebThreadPoolConfigChangeDTO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +15,10 @@ import java.util.Optional;
  * 该类屏蔽了具体通知平台的实现细节，对上层调用者提供统一的通知发送入口
  * 内部根据配置自动初始化可用的 Notifier 实现，并在发送通知时根据平台类型动态路由到对应的发送器
  * <p>
+ *
  * @author zicca
  */
-public class NotifierDispatcher implements NotifierService{
+public class NotifierDispatcher implements NotifierService {
 
     private static final Map<String, NotifierService> NOTIFIER_SERVICE_MAP = new HashMap<>();
 
@@ -27,7 +30,6 @@ public class NotifierDispatcher implements NotifierService{
 //        NOTIFIER_SERVICE_MAP.put("WX", new WXMessageService());
 //        NOTIFIER_SERVICE_MAP.put("EMAIL", new EmailMessageService());
     }
-
 
 
     @Override
@@ -45,6 +47,16 @@ public class NotifierDispatcher implements NotifierService{
                 service.sendAlarmMessage(alarm);
             }
         });
+    }
+
+    @Override
+    public void sendChangeMessage(ThreadPoolConfigChangeDTO configChange) {
+        getNotifierService().ifPresent(service -> service.sendChangeMessage(configChange));
+    }
+
+    @Override
+    public void sendWebChangeMessage(WebThreadPoolConfigChangeDTO configChange) {
+        getNotifierService().ifPresent(service -> service.sendWebChangeMessage(configChange));
     }
 
 
