@@ -6,16 +6,46 @@ package com.zicca.zthread.core.constant;
  * @author zicca
  */
 public class Constants {
+
     /**
      * 线程池参数变更日志打印常量
      */
-    public static final String CHANGE_THREAD_POOL_TEXT = "[{}] Dynamic thread pool parameter changed:"
-            + "\n    corePoolSize: {}"
-            + "\n    maximumPoolSize: {}"
-            + "\n    capacity: {}"
-            + "\n    keepAliveTime: {}"
-            + "\n    rejectedType: {}"
-            + "\n    allowCoreThreadTimeOut: {}";
+    public static final String CHANGE_THREAD_POOL_TEXT = "\n" +
+            "[{}] Dynamic thread pool parameter changed:\n" +
+            "──────────────────────────────────────────────────────────\n" +
+            " • Parameter                • Change\n" +
+            "──────────────────────────────────────────────────────────\n" +
+            " • corePoolSize             • {}                          \n" +
+            " • maximumPoolSize          • {}                          \n" +
+            " • capacity                 • {}                          \n" +
+            " • keepAliveTime            • {}                          \n" +
+            " • rejectedType             • {}                          \n" +
+            " • allowCoreThreadTimeOut   • {}                          \n" +
+            "──────────────────────────────────────────────────────────";
+
+    /**
+     * Web 线程池参数变更日志打印常量
+     */
+    public static final String CHANGE_TOMCAT_THREAD_POOL_TEXT = "\n" +
+            "[Tomcat] Web dynamic thread pool parameter changed:\n" +
+            "──────────────────────────────────────────────────────────\n" +
+            " • Parameter                • Change\n" +
+            "──────────────────────────────────────────────────────────\n" +
+            " • corePoolSize             • {}                          \n" +
+            " • maximumPoolSize          • {}                          \n" +
+            " • keepAliveTime            • {}                          \n" +
+            "──────────────────────────────────────────────────────────";
+
+    public static final String CHANGE_JETTY_THREAD_POOL_TEXT = "\n" +
+            "[Tomcat] Web dynamic thread pool parameter changed:\n" +
+            "──────────────────────────────────────────────────────────\n" +
+            " • Parameter                • Change\n" +
+            "──────────────────────────────────────────────────────────\n" +
+            " • corePoolSize             • {}                          \n" +
+            " • maximumPoolSize          • {}                          \n" +
+            " • keepAliveTime            • {}                          \n" +
+            "──────────────────────────────────────────────────────────";
+
 
     /**
      * 线程池参数变更前后分隔符常量

@@ -69,7 +69,6 @@ public class ThreadPoolMonitor {
             for (ThreadPoolExecutorHolder holder : holders) {
                 ThreadPoolRuntimeInfo runtimeInfo = buildThreadPoolRuntimeInfo(holder);
 
-                // todo: 优化为策略模式，方便后续扩展监控类型
                 if (Objects.equals(monitorConfig.getCollectType(), "log")) {
                     logMonitor(runtimeInfo);
                 } else if (Objects.equals(monitorConfig.getCollectType(), "micrometer")) {
@@ -96,7 +95,8 @@ public class ThreadPoolMonitor {
      * @param runtimeInfo 运行时信息
      */
     private void logMonitor(ThreadPoolRuntimeInfo runtimeInfo) {
-        log.info("[ThreadPool Monitor] {} | Content: {}",
+        // todo: 待完善，当配置中心中途切换enable属性时，无法生效
+        log.info(">>>>>>>>[ThreadPool Monitor] {} | Content: {}",
                 runtimeInfo.getThreadPoolId(),
                 JSON.toJSON(runtimeInfo));
     }

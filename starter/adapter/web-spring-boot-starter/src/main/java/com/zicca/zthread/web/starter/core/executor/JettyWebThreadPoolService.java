@@ -14,6 +14,7 @@ import org.springframework.boot.web.server.WebServer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 
+import static com.zicca.zthread.core.constant.Constants.CHANGE_JETTY_THREAD_POOL_TEXT;
 import static com.zicca.zthread.web.starter.core.WebContainerEnum.JETTY;
 
 /**
@@ -45,7 +46,7 @@ public class JettyWebThreadPoolService extends AbstractWebThreadPoolService {
             }
             jettyExecutor.setIdleTimeout(config.getKeepAliveTime().intValue());
 
-            log.info("[Jetty] Changed web thread pool. corePoolSize: {}, maximumPoolSize: {}, keepAliveTime: {}",
+            log.info(CHANGE_JETTY_THREAD_POOL_TEXT,
                     String.format(Constants.CHANGE_DELIMITER, originalCorePoolSize, config.getCorePoolSize()),
                     String.format(Constants.CHANGE_DELIMITER, originalMaximumPoolSize, config.getMaximumPoolSize()),
                     String.format(Constants.CHANGE_DELIMITER, originalKeepAliveTime, config.getKeepAliveTime()));

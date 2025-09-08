@@ -1,0 +1,27 @@
+server:
+  port: 18000
+
+spring:
+  application:
+    name: nacos-cloud-example
+  config:
+    import: optional:nacos:${spring.application.name}.yaml
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        username: nacos
+        password: nacos
+        file-extension: yaml
+        extension-configs:
+          - data-id: ${spring.application.name}.yaml
+            group: DEFAULT_GROUP
+            refresh: true
+        server-addr: 192.168.17.128:8848
+        namespace: public
+      discovery:
+        server-addr: 192.168.17.128:8848
+        namespace: public
+        group: DEFAULT_GROUP
+

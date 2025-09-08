@@ -41,6 +41,6 @@ public class ZThreadBannerHandler implements InitializingBean {
             padding.append(" ");
         }
         System.out.println(AnsiOutput.toString(banner, AnsiColor.GREEN, DYNAMIC_THREAD_POOL, AnsiColor.DEFAULT,
-                padding.toString(), AnsiStyle.FAINT, bannerVersion, "\n\n", ZTHREAD_DASHBOARD, "\n"));
+                padding.toString(), AnsiStyle.FAINT, bannerVersion, "\n", ZTHREAD_DASHBOARD, "\n"));
     }
 }

@@ -1,0 +1,46 @@
+# Nacos 配置中心中的配置
+zthread:
+  nacos:
+    data-id: nacos-cloud-example.yaml
+    group: DEFAULT_GROUP
+  config-file-type: yaml
+  web:
+    core-pool-size: 10
+    maximum-pool-size: 200
+    keep-alive-time: 60
+    notify:
+      receives: zicca
+    notify-platforms:
+      platform: DING
+      url: https://oapi.dingtalk.com/robot/send?access_token=ddc75363b5eb98c3c382b94bda9a0ca896f51664f236491c1e3bf98bc3491a7e&timestamp=1757324556632&sign=hA2hndIHjh%2B3oBVChDyrvts5exEtfBcwUjPwkm7ogQ4%3D
+  executors:
+    - thread-pool-id: zthread-producer
+      core-pool-size: 10
+      maximum-pool-size: 200
+      keep-alive-time: 19999
+      work-queue: ResizableCapacityLinkedBlockingQueue
+      queue-capacity: 10000
+      rejected-handler: CallerRunsPolicy
+      allow-core-thread-time-out: false
+      notify:
+        receives: zicca
+        interval: 5
+      alarm:
+        enable: true
+        queue-threshold: 80
+        active-threshold: 80
+    - thread-pool-id: zthread-consumer
+      core-pool-size: 10
+      maximum-pool-size: 20
+      keep-alive-time: 9999
+      work-queue: LinkedBlockingQueue
+      queue-capacity: 1024
+      rejected-handler: AbortPolicy
+      allow-core-thread-time-out: true
+      notify:
+        receives: zicca
+        interval: 5
+      alarm:
+        enable: true
+        queue-threshold: 80
+        active-threshold: 80

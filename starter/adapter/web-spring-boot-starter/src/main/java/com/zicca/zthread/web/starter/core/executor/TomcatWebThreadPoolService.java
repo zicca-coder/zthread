@@ -6,14 +6,15 @@ import com.zicca.zthread.web.starter.core.WebThreadPoolBaseMetrics;
 import com.zicca.zthread.web.starter.core.WebThreadPoolConfig;
 import com.zicca.zthread.web.starter.core.WebThreadPoolState;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.threads.ThreadPoolExecutor;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.server.WebServer;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static com.zicca.zthread.core.constant.Constants.CHANGE_TOMCAT_THREAD_POOL_TEXT;
 import static com.zicca.zthread.web.starter.core.WebContainerEnum.TOMCAT;
 
 /**
@@ -45,7 +46,7 @@ public class TomcatWebThreadPoolService extends AbstractWebThreadPoolService {
                 tomcatExecutor.setMaximumPoolSize(config.getMaximumPoolSize());
             }
             tomcatExecutor.setKeepAliveTime(config.getKeepAliveTime(), TimeUnit.SECONDS);
-            log.info("[Tomcat] Changed web thread pool. corePoolSize: {}, maximumPoolSize: {}, keepAliveTime: {}",
+            log.info(CHANGE_TOMCAT_THREAD_POOL_TEXT,
                     String.format(Constants.CHANGE_DELIMITER, originalCorePoolSize, config.getCorePoolSize()),
                     String.format(Constants.CHANGE_DELIMITER, originalMaximumPoolSize, config.getMaximumPoolSize()),
                     String.format(Constants.CHANGE_DELIMITER, originalKeepAliveTime, config.getKeepAliveTime()));
