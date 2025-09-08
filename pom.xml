@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.zicca.zthread</groupId>
     <artifactId>zthread-all</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>zthread</name>
     <packaging>pom</packaging>
 

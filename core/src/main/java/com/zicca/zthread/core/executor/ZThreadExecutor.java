@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author zicca
  */
-@Slf4j
+@Slf4j(topic = "com.zicca.zthread.core.executor")
 public class ZThreadExecutor extends ThreadPoolExecutor {
 
     /**
@@ -113,20 +113,20 @@ public class ZThreadExecutor extends ThreadPoolExecutor {
         // 调用父类的 shutdown() 方法，停止接收新任务
         super.shutdown();
 
-        log.info("Before shutting down ExecutorService {}", threadPoolId);
+        log.info("Before shutting down ExecutorService [{}].", threadPoolId);
         try {
             // 使用awaitTermination() 方法等待线程池终止，并设置超时时间为 awaitTerminationMillis，让已提交的任务执行完毕
             boolean isTerminated = this.awaitTermination(this.awaitTerminationMillis, TimeUnit.MILLISECONDS);
             if (!isTerminated) {
                 // 如果超时未终止，记录 warn 级别日志
-                log.warn("Timed out while waiting for executor {} to terminate.", threadPoolId);
+                log.warn("Timed out while waiting for executor [{}] to terminate.", threadPoolId);
             } else {
                 // 如果在指定时间内成功终止，记录 info 级别日志
-                log.info("ExecutorService {} has been shutdown.", threadPoolId);
+                log.info("ExecutorService [{}] has been shutdown.", threadPoolId);
             }
         } catch (InterruptedException ex) {
             // 捕获中断异常，记录警告日志并重新设置线程的中断状态
-            log.warn("Interrupted while waiting for executor {} to terminate.", threadPoolId);
+            log.warn("Interrupted while waiting for executor [{}] to terminate.", threadPoolId);
             Thread.currentThread().interrupt();
         }
     }

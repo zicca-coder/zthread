@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.zicca.zthread</groupId>
 		<artifactId>zthread-starter</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0.0</version>
 	</parent>
 	<artifactId>zhtread-common-spring-boot-starter</artifactId>
 	<name>common-spring-boot-starter</name>
@@ -40,9 +40,18 @@
 				</configuration>
 				<executions>
 					<execution>
+						<id>build-info</id>
 						<goals>
 							<goal>build-info</goal>
 						</goals>
+						<configuration>
+							<additionalProperties>
+								<encoding.source>UTF-8</encoding.source>
+								<encoding.reporting>UTF-8</encoding.reporting>
+								<java.source>${maven.compiler.source}</java.source>
+								<java.target>${maven.compiler.target}</java.target>
+							</additionalProperties>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

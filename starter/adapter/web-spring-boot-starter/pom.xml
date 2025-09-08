@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.zicca.zthread</groupId>
         <artifactId>zthread-adapter</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <artifactId>zthread-web-spring-boot-starter</artifactId>
 
@@ -13,7 +13,7 @@
         <dependency>
             <groupId>com.zicca.zthread</groupId>
             <artifactId>zhtread-common-spring-boot-starter</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

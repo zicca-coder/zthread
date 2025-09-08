@@ -17,7 +17,6 @@ import org.springframework.boot.info.BuildProperties;
 public class ZThreadBannerHandler implements InitializingBean {
 
     private static final String DYNAMIC_THREAD_POOL = " :: Dynamic ThreadPool :: ";
-    private static final String ZTHREAD_DASHBOARD = "Git:    https://github.com/zicca-coder/zthread";
     private static final int STRAP_LINE_SIZE = 50;
     private final String version;
 
@@ -41,6 +40,6 @@ public class ZThreadBannerHandler implements InitializingBean {
             padding.append(" ");
         }
         System.out.println(AnsiOutput.toString(banner, AnsiColor.GREEN, DYNAMIC_THREAD_POOL, AnsiColor.DEFAULT,
-                padding.toString(), AnsiStyle.FAINT, bannerVersion, "\n", ZTHREAD_DASHBOARD, "\n"));
+                padding.toString(), AnsiStyle.FAINT, bannerVersion, "\n"));
     }
 }
