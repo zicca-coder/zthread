@@ -71,6 +71,7 @@ public class ThreadPoolExecutorProperties {
     /**
      * 告警配置，默认设置
      */
+    @Builder.Default
     private AlarmConfig alarm = new AlarmConfig();
 
     @Data

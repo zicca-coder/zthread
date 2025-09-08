@@ -36,7 +36,7 @@ public class YamlConfigParser extends AbstractConfigParser{
         return List.of(ConfigFileTypeEnum.YAML, ConfigFileTypeEnum.YML);
     }
 
-
+    @SuppressWarnings("unchecked")
     private Map<Object, Object> parseYamlDocument(String content) {
         return Optional.ofNullable(new Yaml().load(content))
                 .filter(obj -> obj instanceof Map) // 类型安全检查
