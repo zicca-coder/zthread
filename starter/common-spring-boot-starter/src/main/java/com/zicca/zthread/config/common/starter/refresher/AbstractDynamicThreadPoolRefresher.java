@@ -55,6 +55,19 @@ public abstract class AbstractDynamicThreadPoolRefresher implements ApplicationR
         afterRegister();
     }
 
+    /**
+     * 刷新线程池配置属性
+     * <p>
+     * 该方法用于在配置中心的配置发生变更时，解析新的配置内容并更新线程池相关属性。
+     * 具体步骤如下：
+     * 1. 使用 {@link ConfigParserHandler} 解析配置内容为键值对映射；
+     * 2. 将解析后的配置映射转换为 Spring 的 {@link ConfigurationPropertySource}；
+     * 3. 通过 Spring 的 {@link Binder} 将配置绑定到 {@link BootstrapConfigProperties} 实例；
+     * 4. 发布 {@link ThreadPoolConfigUpdateEvent} 事件，通知监听者配置已更新。
+     * </p>
+     *
+     * @param configInfo 配置中心推送的最新配置内容
+     */
     @SneakyThrows
     public void refreshThreadPoolProperties(String configInfo) {
         Map<Object, Object> configInfoMap = ConfigParserHandler.getInstance().parseConfig(configInfo, properties.getConfigFileType());

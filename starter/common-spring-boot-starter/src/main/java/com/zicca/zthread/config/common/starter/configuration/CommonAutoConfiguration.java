@@ -1,6 +1,8 @@
 package com.zicca.zthread.config.common.starter.configuration;
 
+import com.zicca.zthread.config.common.starter.refresher.DynamicThreadPoolRefreshListener;
 import com.zicca.zthread.core.config.BootstrapConfigProperties;
+import com.zicca.zthread.core.notification.service.NotifierDispatcher;
 import com.zicca.zthread.spring.base.configuration.ZThreadBaseConfiguration;
 import com.zicca.zthread.spring.base.enable.MarkerConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -36,6 +38,11 @@ public class CommonAutoConfiguration {
         // 这种方式允许在应用程序的其他地方通过静态方法访问配置属性
         BootstrapConfigProperties.setInstance(bootstrapConfigProperties);
         return bootstrapConfigProperties;
+    }
+
+    @Bean
+    public DynamicThreadPoolRefreshListener dynamicThreadPoolRefreshListener(NotifierDispatcher notifierDispatcher) {
+        return new DynamicThreadPoolRefreshListener(notifierDispatcher);
     }
 
 }
