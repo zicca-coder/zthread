@@ -2,6 +2,7 @@ package com.zicca.zthread.spring.base.configuration;
 
 import com.zicca.zthread.core.alarm.ThreadPoolAlarmChecker;
 import com.zicca.zthread.core.config.BootstrapConfigProperties;
+import com.zicca.zthread.core.monitor.ThreadPoolMonitor;
 import com.zicca.zthread.core.notification.service.NotifierDispatcher;
 import com.zicca.zthread.spring.base.support.ApplicationContextHolder;
 import com.zicca.zthread.spring.base.support.ZThreadBeanPostProcessor;
@@ -36,6 +37,11 @@ public class ZThreadBaseConfiguration {
     @Bean(initMethod = "start", destroyMethod = "stop")
     public ThreadPoolAlarmChecker threadPoolAlarmChecker(NotifierDispatcher notifierDispatcher) {
         return new ThreadPoolAlarmChecker(notifierDispatcher);
+    }
+
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    public ThreadPoolMonitor threadPoolMonitor() {
+        return new ThreadPoolMonitor();
     }
 
 

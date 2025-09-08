@@ -8,13 +8,15 @@ import com.zicca.zthread.core.config.BootstrapConfigProperties;
 import com.zicca.zthread.core.executor.ThreadPoolExecutorHolder;
 import com.zicca.zthread.core.executor.ZThreadExecutor;
 import com.zicca.zthread.core.executor.ZThreadRegistry;
+import com.zicca.zthread.core.monitor.support.AtomicDeltaWrapper;
+import com.zicca.zthread.core.monitor.support.DeltaWrapper;
+import com.zicca.zthread.core.monitor.support.SynchronizedDeltaWrapper;
 import com.zicca.zthread.core.toolkit.ThreadFactoryBuilder;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Tag;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -134,11 +136,11 @@ public class ThreadPoolMonitor {
             Metrics.gauge(metricName("queue.remaining.capacity"), tags, registerRuntimeInfo, ThreadPoolRuntimeInfo::getWorkQueueRemainingCapacity);
 
             // 注册增量 delta 指标（完成任务数、拒绝任务数等）
-            DeltaWrapper completedDelta = new DeltaWrapper();
+            DeltaWrapper completedDelta = new AtomicDeltaWrapper();
             completedTaskDeltaMap.put(threadPoolId, completedDelta);
             Metrics.gauge(metricName("completed.task.count"), tags, completedDelta, DeltaWrapper::getDelta);
 
-            DeltaWrapper rejectDelta = new DeltaWrapper();
+            DeltaWrapper rejectDelta = new AtomicDeltaWrapper();
             rejectCountDeltaMap.put(threadPoolId, rejectDelta);
             Metrics.gauge(metricName("reject.count"), tags, rejectDelta, DeltaWrapper::getDelta);
         } else {
