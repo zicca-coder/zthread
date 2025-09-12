@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.zicca.zthread</groupId>
     <artifactId>zthread-all</artifactId>
-    <version>1.0.0</version>
+    <version>${revision}</version>
     <name>zthread</name>
     <packaging>pom</packaging>
 
@@ -20,6 +20,7 @@
     </modules>
 
     <properties>
+        <revision>1.0.1</revision>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -33,6 +34,7 @@
         <fastjson2.version>2.0.57</fastjson2.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+        <flatten-maven-plugin.version>1.3.0</flatten-maven-plugin.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -93,6 +95,37 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <inherited>true</inherited>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <configuration>
+                            <updatePomFile>true</updatePomFile>
+                            <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                            <pomElements>
+                                <parent>expand</parent>
+                                <distributionManagement>remove</distributionManagement>
+                                <repositories>remove</repositories>
+                            </pomElements>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
