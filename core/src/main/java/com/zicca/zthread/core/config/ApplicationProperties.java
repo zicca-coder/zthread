@@ -22,5 +22,5 @@ public class ApplicationProperties {
      */
     @Getter
     @Setter
-    private static String activeProfile;
+    private static String activeProfile = "dev";
 }

@@ -1,6 +1,7 @@
 package com.zicca.zthread.web.starter.core.executor;
 
 import com.zicca.zthread.spring.base.support.ApplicationContextHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.web.context.WebServerApplicationContext;
@@ -12,6 +13,7 @@ import java.util.concurrent.Executor;
 /**
  * @author zicca
  */
+@Slf4j
 public abstract class AbstractWebThreadPoolService implements WebThreadPoolService, ApplicationRunner {
 
     protected Executor executor;
@@ -41,13 +43,31 @@ public abstract class AbstractWebThreadPoolService implements WebThreadPoolServi
      */
     public WebServer getWebServer() {
         ApplicationContext applicationContext = ApplicationContextHolder.getInstance();
-        return ((WebServerApplicationContext) applicationContext).getWebServer();
+
+        // 检查是否为 WebServerApplicationContext 类型
+        if (applicationContext instanceof WebServerApplicationContext) {
+            return ((WebServerApplicationContext) applicationContext).getWebServer();
+        }
+
+        // 在测试环境或其他非web环境中返回 null
+        log.warn("ApplicationContext is not a WebServerApplicationContext. Current type: {}", applicationContext.getClass().getName());
+        return null;
     }
 
     @Override
     public void run(ApplicationArguments args) {
-        Executor webExecutor = getExecutor(getWebServer());
-        executor = webExecutor;
+        try {
+            WebServer webServer = getWebServer();
+            if (webServer != null) {
+                Executor webExecutor = getExecutor(webServer);
+                executor = webExecutor;
+            } else {
+                log.info("WebServer not avaliable, skipping web thread pool initialization.");
+            }
+        } catch (Exception e) {
+            log.error("Failed to initialize web thread pool", e);
+            throw e;
+        }
     }
 
 }
