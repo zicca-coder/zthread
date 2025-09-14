@@ -1,0 +1,35 @@
+server:
+  port: 10100
+spring:
+  application:
+    name: zthread-dashboard
+
+zthread:
+  users:
+    - admin, admin
+    - test, test
+  nacos:
+    server-addr: http://192.168.17.128:8081
+  user-login:
+    exclude:
+      interfaces: |-
+        /api/zthread-dashboard/auth/login
+  namespaces:
+    - public
+    - framework
+    - common
+    - test
+    - prod
+  grafana:
+    url: http://192.168.17.128:3000/d/gxBvKxYNz/e58aa8-e68081-e7babf-e7a88b-e6b1a0?orgId=1&theme=light&from=now-12h&to=now&timezone=browser&var-application_name=&var-dynamic_thread_pool_id=&refresh=5s
+
+sa-token:
+  token-name: token
+  is-concurrent: true
+  is-share: true
+  is-read-body: true
+  is-read-header: true
+  is-read-cookie: false
+  is-log: false
+  is-color-log: false
+  is-print: false

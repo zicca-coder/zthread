@@ -106,7 +106,7 @@ public class ThreadPoolMonitor {
      */
     private void logMonitor(ThreadPoolRuntimeInfo runtimeInfo) {
         // todo: 待完善，当配置中心中途切换enable属性时，无法生效
-        log.info(">>>>>>>>[ThreadPool Monitor] {} | Content: {}", runtimeInfo.getThreadPoolId(), JSON.toJSON(runtimeInfo));
+        log.info("[ThreadPool Monitor] {} | Content: {}", runtimeInfo.getThreadPoolId(), JSON.toJSON(runtimeInfo));
     }
 
 
@@ -119,7 +119,7 @@ public class ThreadPoolMonitor {
      * @param runtimeInfo 运行时信息
      */
     private void micrometerMonitor(ThreadPoolRuntimeInfo runtimeInfo) {
-        log.debug(">>>>>>>>[Micrometer Monitor] {} | Content: {}", runtimeInfo.getThreadPoolId(), runtimeInfo);
+        log.debug("[Micrometer Monitor] {} | Content: {}", runtimeInfo.getThreadPoolId(), runtimeInfo);
         String threadPoolId = runtimeInfo.getThreadPoolId();
         ThreadPoolRuntimeInfo existingRuntimeInfo = micrometerMonitorCache.get(threadPoolId);
 
@@ -135,7 +135,7 @@ public class ThreadPoolMonitor {
             micrometerMonitorCache.put(threadPoolId, registerRuntimeInfo);
 
             // 注册各种静态指标（如核心线程数、最大线程数等）
-            Metrics.gauge(metricName("cpre.size"), tags, registerRuntimeInfo, ThreadPoolRuntimeInfo::getCorePoolSize);
+            Metrics.gauge(metricName("core.size"), tags, registerRuntimeInfo, ThreadPoolRuntimeInfo::getCorePoolSize);
             Metrics.gauge(metricName("maximum.size"), tags, registerRuntimeInfo, ThreadPoolRuntimeInfo::getMaximumPoolSize);
             Metrics.gauge(metricName("current.size"), tags, registerRuntimeInfo, ThreadPoolRuntimeInfo::getCurrentPoolSize);
             Metrics.gauge(metricName("largest.size"), tags, registerRuntimeInfo, ThreadPoolRuntimeInfo::getLargestPoolSize);
@@ -145,7 +145,7 @@ public class ThreadPoolMonitor {
             Metrics.gauge(metricName("queue.remaining.capacity"), tags, registerRuntimeInfo, ThreadPoolRuntimeInfo::getWorkQueueRemainingCapacity);
 
             // 注册增量 delta 指标（完成任务数、拒绝任务数等）
-            DeltaWrapper completedDelta = new SynchronizedDeltaWrapper();
+            DeltaWrapper completedDelta = new AtomicDeltaWrapper();
             completedTaskDeltaMap.put(threadPoolId, completedDelta);
             Metrics.gauge(metricName("completed.task.count"), tags, completedDelta, DeltaWrapper::getDelta);
 

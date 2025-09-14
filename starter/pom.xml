@@ -16,6 +16,7 @@
         <module>nacos-cloud-spring-boot-starter</module>
         <module>apollo-spring-boot-starter</module>
         <module>adapter</module>
+        <module>dashboard-dev-spring-boot-starter</module>
     </modules>
 
 

@@ -24,4 +24,15 @@ spring:
         server-addr: 192.168.17.128:8848
         namespace: public
         group: DEFAULT_GROUP
+        cluster-name: default
+        service: ${spring.application.name}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  prometheus:
+    metrics:
+      export:
+        enabled: true
