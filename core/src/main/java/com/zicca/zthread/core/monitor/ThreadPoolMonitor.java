@@ -44,8 +44,7 @@ public class ThreadPoolMonitor {
      * 启动定时检查任务
      */
     public void start() {
-        BootstrapConfigProperties.MonitorConfig monitorConfig =
-                BootstrapConfigProperties.getInstance().getMonitorConfig();
+        BootstrapConfigProperties.MonitorConfig monitorConfig = BootstrapConfigProperties.getInstance().getMonitorConfig();
 
         if (!monitorConfig.getEnable()) {
             return;
@@ -62,20 +61,31 @@ public class ThreadPoolMonitor {
                         .build()
         );
 
-
         // 每指定时间检查一次，初始延迟0s
         scheduler.scheduleWithFixedDelay(() -> {
-            Collection<ThreadPoolExecutorHolder> holders = ZThreadRegistry.getAllHolders();
-            for (ThreadPoolExecutorHolder holder : holders) {
-                ThreadPoolRuntimeInfo runtimeInfo = buildThreadPoolRuntimeInfo(holder);
+            try {
+                log.debug("Starting thread pool monitor task");
+                Collection<ThreadPoolExecutorHolder> holders = ZThreadRegistry.getAllHolders();
+                log.debug("Found {} thread pool holders", holders.size());
 
-                if (Objects.equals(monitorConfig.getCollectType(), "log")) {
-                    logMonitor(runtimeInfo);
-                } else if (Objects.equals(monitorConfig.getCollectType(), "micrometer")) {
-                    micrometerMonitor(runtimeInfo);
+                for (ThreadPoolExecutorHolder holder : holders) {
+                    try {
+                        ThreadPoolRuntimeInfo runtimeInfo = buildThreadPoolRuntimeInfo(holder);
+                        log.debug("Monitoring thread pool: {}", holder.getThreadPoolId());
+
+                        if (Objects.equals(monitorConfig.getCollectType(), "log")) {
+                            logMonitor(runtimeInfo);
+                        } else if (Objects.equals(monitorConfig.getCollectType(), "micrometer")) {
+                            micrometerMonitor(runtimeInfo);
+                        }
+                    } catch (Exception e) {
+                        log.error("Error monitoring thread pool: {}", holder.getThreadPoolId(), e);
+                    }
                 }
+            } catch (Exception e) {
+                log.error("Error in thread pool monitor task", e);
             }
-        }, 0, monitorConfig.getCollectInterval(), TimeUnit.SECONDS);
+        }, 0, 5, TimeUnit.SECONDS);
     }
 
 
@@ -96,21 +106,20 @@ public class ThreadPoolMonitor {
      */
     private void logMonitor(ThreadPoolRuntimeInfo runtimeInfo) {
         // todo: 待完善，当配置中心中途切换enable属性时，无法生效
-        log.info(">>>>>>>>[ThreadPool Monitor] {} | Content: {}",
-                runtimeInfo.getThreadPoolId(),
-                JSON.toJSON(runtimeInfo));
+        log.info(">>>>>>>>[ThreadPool Monitor] {} | Content: {}", runtimeInfo.getThreadPoolId(), JSON.toJSON(runtimeInfo));
     }
 
 
     /**
      * 采集 Micrometer 监控信息
      * <p>
-     *     静态指标：仅注册一次
-     *     动态指标：持续更新
+     * 静态指标：仅注册一次
+     * 动态指标：持续更新
      *
      * @param runtimeInfo 运行时信息
      */
     private void micrometerMonitor(ThreadPoolRuntimeInfo runtimeInfo) {
+        log.debug(">>>>>>>>[Micrometer Monitor] {} | Content: {}", runtimeInfo.getThreadPoolId(), runtimeInfo);
         String threadPoolId = runtimeInfo.getThreadPoolId();
         ThreadPoolRuntimeInfo existingRuntimeInfo = micrometerMonitorCache.get(threadPoolId);
 
@@ -136,7 +145,7 @@ public class ThreadPoolMonitor {
             Metrics.gauge(metricName("queue.remaining.capacity"), tags, registerRuntimeInfo, ThreadPoolRuntimeInfo::getWorkQueueRemainingCapacity);
 
             // 注册增量 delta 指标（完成任务数、拒绝任务数等）
-            DeltaWrapper completedDelta = new AtomicDeltaWrapper();
+            DeltaWrapper completedDelta = new SynchronizedDeltaWrapper();
             completedTaskDeltaMap.put(threadPoolId, completedDelta);
             Metrics.gauge(metricName("completed.task.count"), tags, completedDelta, DeltaWrapper::getDelta);
 

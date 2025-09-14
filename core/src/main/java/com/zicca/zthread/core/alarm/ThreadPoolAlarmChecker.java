@@ -67,7 +67,7 @@ public class ThreadPoolAlarmChecker {
                 if (holder.getExecutorProperties().getAlarm().getEnable()) {
                     checkActiveRate(holder);
                     checkQueueUsage(holder);
-//                checkRejectCount(holder);
+                    checkRejectCount(holder);
                 }
             }
         } catch (Throwable throwable) {
