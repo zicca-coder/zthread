@@ -52,8 +52,32 @@ public class ThreadPoolAlarmChecker {
      * 停止报警检查
      */
     public void stop() {
-        if (!scheduler.isShutdown()) {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            log.info("[ThreadPoolAlarmChecker] Start shutting down alarm checker scheduler");
             scheduler.shutdown();
+
+            try {
+                // 等待调度器正常终止，给予30秒时间完成正在进行的任务
+                if (!scheduler.awaitTermination(30, TimeUnit.SECONDS)) {
+                    log.warn("[ThreadPoolAlarmChecker] Alarm checker scheduler did not terminate in 30 seconds, forcing shutdown");
+                    scheduler.shutdownNow();
+
+                    // 再给10秒时间让任务强制关闭
+                    if (!scheduler.awaitTermination(10, TimeUnit.SECONDS)) {
+                        log.error("[ThreadPoolAlarmChecker] Alarm checker scheduler could not be terminated");
+                    }
+                } else {
+                    log.info("[ThreadPoolAlarmChecker] Alarm checker scheduler has been successfully shutdown");
+                }
+            } catch (InterruptedException e) {
+                log.warn("[ThreadPoolAlarmChecker] Interrupted while waiting for alarm checker scheduler to terminate", e);
+                scheduler.shutdownNow();
+                Thread.currentThread().interrupt(); // 保持线程中断状态
+            }
+        } else if (scheduler == null) {
+            log.debug("[ThreadPoolAlarmChecker] Alarm checker scheduler is null, nothing to shutdown");
+        } else {
+            log.debug("[ThreadPoolAlarmChecker] Alarm checker scheduler is already shutdown");
         }
     }
 

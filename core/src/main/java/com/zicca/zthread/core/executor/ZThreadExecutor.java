@@ -110,19 +110,30 @@ public class ZThreadExecutor extends ThreadPoolExecutor {
             return;
         }
 
+        // 打印关闭前的线程池状态信息
+        log.info("Shutting down ZThreadExecutor [{}]. Status: [Pool size = {}, Active threads = {}, Queued tasks = {}, Completed tasks = {}, Rejected tasks = {}]",
+                threadPoolId,
+                getPoolSize(),
+                getActiveCount(),
+                getQueue().size(),
+                getCompletedTaskCount(),
+                rejectCount.get());
+
         // 调用父类的 shutdown() 方法，停止接收新任务
         super.shutdown();
 
-        log.info("Before shutting down ExecutorService [{}].", threadPoolId);
+        log.info("ExecutorService [{}] shutdown initiated.", threadPoolId);
+
         try {
             // 使用awaitTermination() 方法等待线程池终止，并设置超时时间为 awaitTerminationMillis，让已提交的任务执行完毕
             boolean isTerminated = this.awaitTermination(this.awaitTerminationMillis, TimeUnit.MILLISECONDS);
             if (!isTerminated) {
                 // 如果超时未终止，记录 warn 级别日志
-                log.warn("Timed out while waiting for executor [{}] to terminate.", threadPoolId);
+                log.warn("Timed out while waiting for executor [{}] to terminate. Timeout: {}ms",
+                        threadPoolId, awaitTerminationMillis);
             } else {
                 // 如果在指定时间内成功终止，记录 info 级别日志
-                log.info("ExecutorService [{}] has been shutdown.", threadPoolId);
+                log.info("ExecutorService [{}] has been successfully shutdown.", threadPoolId);
             }
         } catch (InterruptedException ex) {
             // 捕获中断异常，记录警告日志并重新设置线程的中断状态
@@ -130,7 +141,5 @@ public class ZThreadExecutor extends ThreadPoolExecutor {
             Thread.currentThread().interrupt();
         }
     }
-
-
 
 }

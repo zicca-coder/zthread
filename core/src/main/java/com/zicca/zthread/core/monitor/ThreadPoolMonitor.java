@@ -85,7 +85,7 @@ public class ThreadPoolMonitor {
             } catch (Exception e) {
                 log.error("Error in thread pool monitor task", e);
             }
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 0, monitorConfig.getCollectInterval(), TimeUnit.SECONDS);
     }
 
 
@@ -94,7 +94,31 @@ public class ThreadPoolMonitor {
      */
     public void stop() {
         if (scheduler != null && !scheduler.isShutdown()) {
+            log.info("[ThreadPoolMonitor] Start shutting down monitor scheduler");
             scheduler.shutdown();
+
+            try {
+                // 等待监控任务结束，给与一定的时间来完成正在进行的任务
+                if (!scheduler.awaitTermination(30, TimeUnit.SECONDS)) {
+                    log.warn("[ThreadPoolMonitor] Monitor scheduler did not terminate in 30 seconds, forcing shutdown");
+                    scheduler.shutdownNow();
+
+                    // 再给一次机会等待立即关闭
+                    if (!scheduler.awaitTermination(10, TimeUnit.SECONDS)) {
+                        log.error("[ThreadPoolMonitor] Monitor scheduler could not be terminated");
+                    }
+                } else {
+                    log.info("[ThreadPoolMonitor] Monitor scheduler has been successfully shutdown");
+                }
+            } catch (InterruptedException e) {
+                log.warn("[ThreadPoolMonitor] Interrupted while waiting for monitor scheduler to terminate", e);
+                scheduler.shutdownNow();
+                Thread.currentThread().interrupt(); // 保留中断状态
+            }
+        } else if (scheduler == null) {
+            log.debug("[ThreadPoolMonitor] Monitor scheduler is null, nothing to shutdown");
+        } else {
+            log.debug("[ThreadPoolMonitor] Monitor scheduler is already shutdown");
         }
     }
 
