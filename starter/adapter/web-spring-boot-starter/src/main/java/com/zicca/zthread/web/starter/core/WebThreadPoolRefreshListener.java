@@ -56,7 +56,9 @@ public class WebThreadPoolRefreshListener implements ApplicationListener<ThreadP
             webThreadPoolService.updateThreadPool(BeanUtil.toBean(webExecutorConfig, WebThreadPoolConfig.class));
 
             // 发送 Web 线程池配置变更通知
-            sendWebThreadPoolConfigChangeMessage(basicMetrics, webExecutorConfig);
+            if (BootstrapConfigProperties.getInstance().getNotifyPlatforms().getEnable()) {
+                sendWebThreadPoolConfigChangeMessage(basicMetrics, webExecutorConfig);
+            }
         }
     }
 

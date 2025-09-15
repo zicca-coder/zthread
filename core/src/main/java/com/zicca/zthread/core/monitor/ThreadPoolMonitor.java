@@ -142,7 +142,7 @@ public class ThreadPoolMonitor {
      * @param runtimeInfo 运行时信息
      */
     private void micrometerMonitor(ThreadPoolRuntimeInfo runtimeInfo) {
-        log.info("[Micrometer Monitor] {} | Content: {}", runtimeInfo.getThreadPoolId(), runtimeInfo);
+        log.debug("[Micrometer Monitor] {} | Content: {}", runtimeInfo.getThreadPoolId(), runtimeInfo);
         String threadPoolId = runtimeInfo.getThreadPoolId();
         ThreadPoolRuntimeInfo existingRuntimeInfo = micrometerMonitorCache.get(threadPoolId);
 

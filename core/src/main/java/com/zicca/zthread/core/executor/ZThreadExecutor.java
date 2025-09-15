@@ -111,7 +111,7 @@ public class ZThreadExecutor extends ThreadPoolExecutor {
         }
 
         // 打印关闭前的线程池状态信息
-        log.info("Shutting down ZThreadExecutor [{}]. Status: [Pool size = {}, Active threads = {}, Queued tasks = {}, Completed tasks = {}, Rejected tasks = {}]",
+        log.info("Shutting down [{}]. Status: [Pool size = {}, Active threads = {}, Queued tasks = {}, Completed tasks = {}, Rejected tasks = {}]",
                 threadPoolId,
                 getPoolSize(),
                 getActiveCount(),

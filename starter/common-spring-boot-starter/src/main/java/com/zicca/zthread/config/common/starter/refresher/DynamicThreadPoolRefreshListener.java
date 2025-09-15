@@ -57,16 +57,16 @@ public class DynamicThreadPoolRefreshListener implements ApplicationListener<Thr
     public void onApplicationEvent(ThreadPoolConfigUpdateEvent event) {
         // 获取配置中心最新的线程池配置
         BootstrapConfigProperties refresherProperties = event.getBootstrapConfigProperties();
-        
+
         // 如果没有配置线程池，则直接返回
         if (CollUtil.isEmpty(refresherProperties.getExecutors())) {
             return;
         }
-        
+
         // 遍历所有线程池配置
         for (ThreadPoolExecutorProperties remoteProperties : refresherProperties.getExecutors()) {
             String threadPoolId = remoteProperties.getThreadPoolId();
-            
+
             // 以线程池 ID 为粒度加锁，避免多个线程同时刷新同一个线程池
             synchronized (threadPoolId.intern()) {
                 // 检查线程池配置是否发生变化
@@ -74,19 +74,16 @@ public class DynamicThreadPoolRefreshListener implements ApplicationListener<Thr
                 if (!changed) {
                     continue;
                 }
-                
+
                 // 根据远程配置更新线程池参数
                 updateThreadPoolFromRemoteConfig(remoteProperties);
 
                 // 获取线程池持有者和原始配置
                 ThreadPoolExecutorHolder holder = ZThreadRegistry.getHolder(threadPoolId);
                 ThreadPoolExecutorProperties originalProperties = holder.getExecutorProperties();
-                
+
                 // 更新线程池持有者的配置信息
                 holder.setExecutorProperties(remoteProperties);
-
-                // 发送线程池配置变更消息通知
-                sendThreadPoolConfigChangeMessage(originalProperties, remoteProperties);
 
                 // 打印线程池配置变更日志
                 log.info(CHANGE_THREAD_POOL_TEXT,
@@ -98,6 +95,11 @@ public class DynamicThreadPoolRefreshListener implements ApplicationListener<Thr
                         String.format(CHANGE_DELIMITER, originalProperties.getRejectedHandler(), remoteProperties.getRejectedHandler()),
                         String.format(CHANGE_DELIMITER, originalProperties.getAllowCoreThreadTimeOut(), remoteProperties.getAllowCoreThreadTimeOut())
                 );
+
+                // 发送线程池配置变更消息通知
+                if (event.getBootstrapConfigProperties().getNotifyPlatforms().getEnable()) {
+                    sendThreadPoolConfigChangeMessage(originalProperties, remoteProperties);
+                }
             }
         }
     }

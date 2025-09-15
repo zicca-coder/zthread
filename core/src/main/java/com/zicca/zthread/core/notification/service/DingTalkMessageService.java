@@ -24,8 +24,6 @@ import static com.zicca.zthread.core.constant.Constants.*;
 @Slf4j
 public class DingTalkMessageService implements NotifierService {
 
-
-
     @Override
     public void sendAlarmMessage(ThreadPoolAlarmNotifyDTO alarm) {
         String text = String.format(
@@ -99,7 +97,6 @@ public class DingTalkMessageService implements NotifierService {
         sendDingTalkMarkdownMessage(webContainerName + "线程池通知", text, atMobiles);
     }
 
-
     /**
      * 通用的钉钉markdown格式发送逻辑
      *
@@ -131,7 +128,6 @@ public class DingTalkMessageService implements NotifierService {
             log.error("Ding failed to send message.", ex);
         }
     }
-
 
     @Data
     static class DingRobotResponse {

@@ -179,7 +179,6 @@ public class ThreadPoolAlarmChecker {
 
     }
 
-
     @SneakyThrows
     private void sendAlarmMessage(String alarmType, ThreadPoolExecutorHolder holder) {
         AlarmTypeEnum.of(alarmType);
@@ -219,6 +218,5 @@ public class ThreadPoolAlarmChecker {
                 .build();
         notifierDispatcher.sendAlarmMessage(alarm);
     }
-
 
 }

@@ -44,7 +44,7 @@ public class BootstrapConfigProperties {
     /**
      * 通知配置
      */
-    private NotifyPlatformsConfig notifyPlatforms;
+    private NotifyPlatformsConfig notifyPlatforms = new NotifyPlatformsConfig();
 
     /**
      * 监控配置
@@ -58,7 +58,12 @@ public class BootstrapConfigProperties {
 
 
     @Data
-    public static class NotifyPlatformsConfig{
+    public static class NotifyPlatformsConfig {
+
+        /**
+         * 是否开启通知
+         */
+        private Boolean enable = Boolean.FALSE;
 
         /**
          * 通知类型，比如 DING

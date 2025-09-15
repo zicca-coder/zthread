@@ -1,5 +1,7 @@
 package com.zicca.zthread.core.notification.service;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -11,6 +13,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author zicca
  */
+@Slf4j
 public class AlarmRateLimiter {
 
     /**
