@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnProperty(prefix = BootstrapConfigProperties.PREFIX, value = "enable", matchIfMissing = true, havingValue = "true")
 public class NacosCloudAutoConfiguration {
 
-    @Bean
+    @Bean(initMethod = "start", destroyMethod = "stop")
     public NacosCloudRefresherHandler nacosCloudRefresherHandler(NacosConfigManager nacosConfigManager, BootstrapConfigProperties properties) {
         return new NacosCloudRefresherHandler(nacosConfigManager.getConfigService(), properties);
     }
