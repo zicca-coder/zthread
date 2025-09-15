@@ -44,12 +44,6 @@ public class ThreadPoolMonitor {
      * 启动定时检查任务
      */
     public void start() {
-        BootstrapConfigProperties.MonitorConfig monitorConfig = BootstrapConfigProperties.getInstance().getMonitorConfig();
-
-        if (!monitorConfig.getEnable()) {
-            return;
-        }
-
         // 初始化监控相关资源
         micrometerMonitorCache = new ConcurrentHashMap<>();
         rejectCountDeltaMap = new ConcurrentHashMap<>();
@@ -64,6 +58,12 @@ public class ThreadPoolMonitor {
         // 每指定时间检查一次，初始延迟0s
         scheduler.scheduleWithFixedDelay(() -> {
             try {
+                BootstrapConfigProperties.MonitorConfig monitorConfig = BootstrapConfigProperties.getInstance().getMonitorConfig();
+                // perf：运行时检查监控是否启用，支持动态切换
+                if (!monitorConfig.getEnable()) {
+                    return;
+                }
+
                 log.debug("Starting thread pool monitor task");
                 Collection<ThreadPoolExecutorHolder> holders = ZThreadRegistry.getAllHolders();
                 log.debug("Found {} thread pool holders", holders.size());
@@ -85,7 +85,7 @@ public class ThreadPoolMonitor {
             } catch (Exception e) {
                 log.error("Error in thread pool monitor task", e);
             }
-        }, 0, monitorConfig.getCollectInterval(), TimeUnit.SECONDS);
+        }, 0, BootstrapConfigProperties.getInstance().getMonitorConfig().getCollectInterval(), TimeUnit.SECONDS);
     }
 
 
@@ -129,8 +129,7 @@ public class ThreadPoolMonitor {
      * @param runtimeInfo 运行时信息
      */
     private void logMonitor(ThreadPoolRuntimeInfo runtimeInfo) {
-        // todo: 待完善，当配置中心中途切换enable属性时，无法生效
-        log.info("[ThreadPool Monitor] {} | Content: {}", runtimeInfo.getThreadPoolId(), JSON.toJSON(runtimeInfo));
+        log.info("[Log Monitor] {} | Content: {}", runtimeInfo.getThreadPoolId(), JSON.toJSON(runtimeInfo));
     }
 
 
@@ -143,7 +142,7 @@ public class ThreadPoolMonitor {
      * @param runtimeInfo 运行时信息
      */
     private void micrometerMonitor(ThreadPoolRuntimeInfo runtimeInfo) {
-        log.debug("[Micrometer Monitor] {} | Content: {}", runtimeInfo.getThreadPoolId(), runtimeInfo);
+        log.info("[Micrometer Monitor] {} | Content: {}", runtimeInfo.getThreadPoolId(), runtimeInfo);
         String threadPoolId = runtimeInfo.getThreadPoolId();
         ThreadPoolRuntimeInfo existingRuntimeInfo = micrometerMonitorCache.get(threadPoolId);
 
@@ -186,6 +185,24 @@ public class ThreadPoolMonitor {
         completedTaskDeltaMap.get(threadPoolId).update(runtimeInfo.getCompletedTaskCount());
         rejectCountDeltaMap.get(threadPoolId).update(runtimeInfo.getRejectCount());
 
+    }
+
+    /**
+     * 清理 Micrometer 监控指标
+     * <p>
+     * 注意：Micrometer 注册的监控指标无法直接移除，这是 Micrometer 的限制。如果需要清理，则需要重新创建 MeterRegistry
+     */
+    private void clearMicrometerMonitor() {
+        // 清理缓存数据
+        if (micrometerMonitorCache != null) {
+            micrometerMonitorCache.clear();
+        }
+        if (rejectCountDeltaMap != null) {
+            rejectCountDeltaMap.clear();
+        }
+        if (completedTaskDeltaMap != null) {
+            completedTaskDeltaMap.clear();
+        }
     }
 
 
