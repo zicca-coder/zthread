@@ -2,6 +2,7 @@ package com.zicca.zthread.web.starter.core.executor;
 
 import com.zicca.zthread.spring.base.support.ApplicationContextHolder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.web.context.WebServerApplicationContext;
@@ -14,7 +15,7 @@ import java.util.concurrent.Executor;
  * @author zicca
  */
 @Slf4j
-public abstract class AbstractWebThreadPoolService implements WebThreadPoolService, ApplicationRunner {
+public abstract class AbstractWebThreadPoolService implements WebThreadPoolService, InitializingBean {
 
     protected Executor executor;
 
@@ -55,7 +56,7 @@ public abstract class AbstractWebThreadPoolService implements WebThreadPoolServi
     }
 
     @Override
-    public void run(ApplicationArguments args) {
+    public void afterPropertiesSet() {
         try {
             WebServer webServer = getWebServer();
             if (webServer != null) {

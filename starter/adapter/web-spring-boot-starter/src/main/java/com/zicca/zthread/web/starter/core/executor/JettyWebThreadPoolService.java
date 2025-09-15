@@ -1,6 +1,7 @@
 package com.zicca.zthread.web.starter.core.executor;
 
 import cn.hutool.core.util.ReflectUtil;
+import com.zicca.zthread.core.config.BootstrapConfigProperties;
 import com.zicca.zthread.core.constant.Constants;
 import com.zicca.zthread.web.starter.core.WebContainerEnum;
 import com.zicca.zthread.web.starter.core.WebThreadPoolBaseMetrics;
@@ -11,6 +12,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.boot.web.server.WebServer;
 
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 
@@ -27,6 +29,27 @@ public class JettyWebThreadPoolService extends AbstractWebThreadPoolService {
     @Override
     protected Executor getExecutor(WebServer webServer) {
         return ((JettyWebServer) webServer).getServer().getThreadPool();
+    }
+
+    public void init() {
+        BootstrapConfigProperties.WebThreadPoolExecutorConfig config = BootstrapConfigProperties.getInstance().getWeb();
+        if (Objects.isNull(config)) {
+            return;
+        }
+        log.debug("Initialize Web ThreadPool from remote config center: {}", config);
+        QueuedThreadPool jettyExecutor = (QueuedThreadPool) executor;
+        int originalCorePoolSize = jettyExecutor.getMinThreads();
+        int originalMaximumPoolSize = jettyExecutor.getMaxThreads();
+        long originalKeepAliveTime = jettyExecutor.getIdleTimeout();
+
+        if (config.getCorePoolSize() > originalMaximumPoolSize) {
+            jettyExecutor.setMaxThreads(config.getMaximumPoolSize());
+            jettyExecutor.setMinThreads(config.getCorePoolSize());
+        } else {
+            jettyExecutor.setMinThreads(config.getCorePoolSize());
+            jettyExecutor.setMaxThreads(config.getMaximumPoolSize());
+        }
+        jettyExecutor.setIdleTimeout(config.getKeepAliveTime().intValue());
     }
 
     @Override

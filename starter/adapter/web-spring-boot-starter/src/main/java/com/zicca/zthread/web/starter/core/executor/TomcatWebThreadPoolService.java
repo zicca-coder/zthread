@@ -1,5 +1,6 @@
 package com.zicca.zthread.web.starter.core.executor;
 
+import com.zicca.zthread.core.config.BootstrapConfigProperties;
 import com.zicca.zthread.core.constant.Constants;
 import com.zicca.zthread.web.starter.core.WebContainerEnum;
 import com.zicca.zthread.web.starter.core.WebThreadPoolBaseMetrics;
@@ -10,6 +11,7 @@ import org.apache.tomcat.util.threads.ThreadPoolExecutor;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.server.WebServer;
 
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +30,27 @@ public class TomcatWebThreadPoolService extends AbstractWebThreadPoolService {
     @Override
     protected Executor getExecutor(WebServer webServer) {
         return ((TomcatWebServer) webServer).getTomcat().getConnector().getProtocolHandler().getExecutor();
+    }
+
+    public void init() {
+        BootstrapConfigProperties.WebThreadPoolExecutorConfig config = BootstrapConfigProperties.getInstance().getWeb();
+        if (Objects.isNull(config)) {
+            return;
+        }
+        log.info("Initialize Web ThreadPool from remote config center: {}", config);
+        ThreadPoolExecutor tomcatExecutor = (ThreadPoolExecutor) executor;
+        int originalCorePoolSize = tomcatExecutor.getCorePoolSize();
+        int originalMaximumPoolSize = tomcatExecutor.getMaximumPoolSize();
+        long originalKeepAliveTime = tomcatExecutor.getKeepAliveTime(TimeUnit.SECONDS);
+
+        if (config.getCorePoolSize() > originalMaximumPoolSize) {
+            tomcatExecutor.setMaximumPoolSize(config.getMaximumPoolSize());
+            tomcatExecutor.setCorePoolSize(config.getCorePoolSize());
+        } else {
+            tomcatExecutor.setCorePoolSize(config.getCorePoolSize());
+            tomcatExecutor.setMaximumPoolSize(config.getMaximumPoolSize());
+        }
+        tomcatExecutor.setKeepAliveTime(config.getKeepAliveTime(), TimeUnit.SECONDS);
     }
 
     @Override

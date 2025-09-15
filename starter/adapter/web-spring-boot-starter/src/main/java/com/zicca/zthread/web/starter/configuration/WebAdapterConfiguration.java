@@ -22,14 +22,14 @@ import org.springframework.context.annotation.Configuration;
 public class WebAdapterConfiguration {
 
 
-    @Bean
+    @Bean(initMethod = "init")
     @ConditionalOnClass(name = {"org.apache.catalina.startup.Tomcat", "org.apache.coyote.UpgradeProtocol", "jakarta.servlet.Servlet"})
     @ConditionalOnBean(value = ConfigurableTomcatWebServerFactory.class, search = SearchStrategy.CURRENT)
     public TomcatWebThreadPoolService tomcatWebThreadPoolService() {
         return new TomcatWebThreadPoolService();
     }
 
-    @Bean
+    @Bean("init")
     @ConditionalOnClass(
             name = {
                     "jakarta.servlet.Servlet", "org.eclipse.jetty.server.Server",

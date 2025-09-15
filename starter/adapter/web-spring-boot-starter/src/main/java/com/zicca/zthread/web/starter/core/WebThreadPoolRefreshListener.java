@@ -10,6 +10,7 @@ import com.zicca.zthread.spring.base.support.ApplicationContextHolder;
 import com.zicca.zthread.web.starter.core.executor.WebThreadPoolService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;
 
@@ -28,7 +29,6 @@ public class WebThreadPoolRefreshListener implements ApplicationListener<ThreadP
 
     private final WebThreadPoolService webThreadPoolService;
     private final NotifierDispatcher notifierDispatcher;
-
 
     /**
      * 监听线程池配置更新事件，当检测到 Web 线程池配置发生变更时，动态更新线程池参数并发送通知
